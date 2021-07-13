@@ -14,6 +14,20 @@ public class CameraFollow : MonoBehaviour
     private bool Horizontal = true;
     [SerializeField]
     private bool Vertical = true;
+    [SerializeField]
+    private float MinX, MaxX;
+    [SerializeField]
+    private bool ClampHorizontally;
+
+    private void Start()
+    {
+        SetOnTargetImmediate();
+    }
+
+    public void SetOnTargetImmediate()
+    {
+        transform.position = m_Target.position + m_Offset;
+    }
 
     private void LateUpdate()
     {
@@ -22,6 +36,12 @@ public class CameraFollow : MonoBehaviour
             newTarget.x = 0;
         if (!Vertical)
             newTarget.y = 0;
-        transform.position = Vector3.Lerp(transform.position, newTarget + m_Offset, Time.deltaTime * m_Speed);
+        transform.position = Vector3.MoveTowards(transform.position, newTarget + m_Offset, Time.deltaTime * m_Speed);
+        if (ClampHorizontally)
+        {
+            var x = transform.position.x;
+            x = Mathf.Clamp(x, MinX, MaxX);
+            transform.position = new Vector3(x, transform.position.y, transform.position.z);
+        }
     }
 }

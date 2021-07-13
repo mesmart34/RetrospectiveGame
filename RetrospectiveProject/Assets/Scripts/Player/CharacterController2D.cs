@@ -42,6 +42,11 @@ public class CharacterController2D : MonoBehaviour
             OnCrouchEvent = new BoolEvent();
     }
 
+    public bool IsFacedRight()
+    {
+        return m_FacingRight;
+    }
+
     private void FixedUpdate()
     {
         bool wasGrounded = m_Grounded;

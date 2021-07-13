@@ -2,61 +2,52 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
+using Dialogue;
 
 public class DialogueManager : MonoBehaviour
 {
     [SerializeField]
-    private TextMeshProUGUI m_Text;
-    private Queue<string> m_Sentences = new Queue<string>();
-    private Animator m_Animator;
+    private DialogueGraph Graph;
 
+    [SerializeField]
+    private Transform AnswersParent;
 
-    private void Awake()
+    [SerializeField]
+    private GameObject AnswerPrefab;
+
+    [SerializeField]
+    private TextMeshProUGUI Text;
+
+    private Chat RootChat;
+
+    private void Start()
     {
-        m_Animator = GetComponent<Animator>();
+        RootChat = (Chat)Graph.nodes[0];
+        ShowDialogue();
     }
 
-    public void StartDialogue(Dialogue dialogue)
+    public void ShowDialogue()
     {
-        m_Animator.SetTrigger("Open");
-        print("Started dialogue with" + dialogue.m_Name);
-        m_Sentences.Clear();
-        foreach(var sentence in dialogue.m_Sentences)
+        Text.text = RootChat.text;
+        for (var i = 0; i < RootChat.answers.Count; i++)
         {
-            m_Sentences.Enqueue(sentence);
+            var answerObject = Instantiate(AnswerPrefab, AnswersParent);
+            answerObject.GetComponentInChildren<TextMeshProUGUI>().text = RootChat.answers[i].text;
+            var option = i;
+            answerObject.GetComponent<Button>().onClick.AddListener(()=>{
+                OnButtonPressed(option);
+            });
         }
-        DisplayNextSentence();
     }
-
-    private IEnumerator TypeSentence(string sentence)
+    private void OnButtonPressed(int option)
     {
-        m_Text.SetText("");
-        yield return new WaitForSeconds(0.5f);
-        foreach (var c in sentence)
+        RootChat.AnswerQuestion(option);
+        RootChat = Graph.current;
+        foreach (Transform child in AnswersParent)
         {
-            m_Text.text += c;
-            yield return new WaitForSeconds(0.025f);
+            Destroy(child.gameObject);
         }
+        ShowDialogue();
     }
-
-    public void DisplayNextSentence()
-    {
-        if (m_Sentences.Count == 0)
-        {
-            EndDialogue();
-            m_Animator.SetTrigger("Open");
-            FindObjectOfType<PlayerController>().m_IsAbleToMove = true;
-            return;
-        }
-        var sentence = m_Sentences.Dequeue();
-        StopAllCoroutines();
-        StartCoroutine(TypeSentence(sentence));
-        print(sentence);
-    }
-
-    private void EndDialogue()
-    {
-        print("The dialoue is ended");
-    }
-
 }
