@@ -7,6 +7,7 @@ using UnityEngine;
 public class Item : ScriptableObject
 {
     public string Name;
+    public int Id;
     public Sprite Sprite;
     public bool IsCollectable;
 }

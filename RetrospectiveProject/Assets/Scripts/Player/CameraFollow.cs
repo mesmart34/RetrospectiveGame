@@ -19,6 +19,22 @@ public class CameraFollow : MonoBehaviour
     [SerializeField]
     private bool ClampHorizontally;
 
+    public void SetCityZoom()
+    {
+        Camera.main.orthographicSize = 10.0f;
+        m_Offset.y = 5.3f;
+        MinX = -50;
+        MaxX = 76;
+    }
+
+    public void SetRoomZoom()
+    {
+        Camera.main.orthographicSize = 6.7f;
+        m_Offset.y = 2.29f;
+        MinX = -8;
+        MaxX = 8;
+    }
+
     private void Start()
     {
         SetOnTargetImmediate();

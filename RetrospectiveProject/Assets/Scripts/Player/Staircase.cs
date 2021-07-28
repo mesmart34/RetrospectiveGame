@@ -13,6 +13,11 @@ public class Staircase : MonoBehaviour
     private bool Pressed = false;
     private Collider2D Player;
 
+    public string Label;
+
+    [SerializeField]
+    public UnityEvent OnStairUse;
+
     private void Awake()
     {
         FadeScreen = GameObject.FindGameObjectWithTag("FadeScreen");    
@@ -37,7 +42,21 @@ public class Staircase : MonoBehaviour
         }
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
+    public void Use(GameObject obj)
+    {
+        Other.Spawned = true;
+        if(FadeScreen == null)
+            FadeScreen = GameObject.FindGameObjectWithTag("FadeScreen");
+        StartCoroutine(FadeScreen.GetComponent<FadeScreen>().DoFading(() =>
+        {
+            obj.transform.position = new Vector3(Other.gameObject.transform.position.x, Other.gameObject.transform.position.y, 0);
+            obj.gameObject.GetComponent<PlayerController>().enabled = false;
+            Camera.main.GetComponent<CameraFollow>().SetOnTargetImmediate();
+            OnStairUse.Invoke();
+        }));
+    }
+
+    /*private void OnTriggerStay2D(Collider2D collision)
     {
         if(Pressed && collision.tag == "Player")
         {
@@ -57,5 +76,5 @@ public class Staircase : MonoBehaviour
         {
             IsPlayerIn = true;
         }
-    }
+    }*/
 }

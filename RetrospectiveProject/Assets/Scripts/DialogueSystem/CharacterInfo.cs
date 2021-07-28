@@ -7,5 +7,6 @@ namespace Dialogue {
 	public class CharacterInfo : ScriptableObject {
 		public Color color;
 		public string name;
+		public Sprite Avatar;
 	}
 }
